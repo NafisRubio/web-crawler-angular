@@ -1,6 +1,6 @@
-import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
-import { NavigationComponent } from './navigation.component';
+import {NavigationComponent} from './navigation.component';
 
 describe('NavigationComponent', () => {
   let component: NavigationComponent;
@@ -9,13 +9,7 @@ describe('NavigationComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [NavigationComponent],
-      imports: [
-        MatButtonModule,
-        MatIconModule,
-        MatListModule,
-        MatSidenavModule,
-        MatToolbarModule,
-      ]
+      imports: []
     });
   }));
 

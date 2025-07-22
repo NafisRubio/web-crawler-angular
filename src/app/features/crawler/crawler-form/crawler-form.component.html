@@ -1,0 +1,18 @@
+<div class="flex justify-center items-baseline">
+  <mat-form-field class="w-80">
+    <mat-label>Enter your domain</mat-label>
+    <input
+        matInput
+        placeholder="example.com"
+        [formControl]="domainName"
+        (blur)="updateErrorMessage()"
+        required
+    />
+    @if (domainName.invalid) {
+      <mat-error>{{ errorMessage() }}</mat-error>
+    }
+  </mat-form-field>
+  <div class="ml-4">
+    <button [disabled]="domainName.invalid" matButton="elevated" color="primary" (click)="onSubmit()" >Submit</button>
+  </div>
+</div>

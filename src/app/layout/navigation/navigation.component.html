@@ -1,8 +1,8 @@
 <mat-sidenav-container class="h-full">
-  <mat-sidenav #drawer  fixedInViewport
-      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-      [mode]="(isHandset$ | async) ? 'over' : 'side'"
-      [opened]="(isHandset$ | async) === false">
+  <mat-sidenav #drawer fixedInViewport
+               [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+               [mode]="(isHandset$ | async) ? 'over' : 'side'"
+               [opened]="(isHandset$ | async) === false">
     <mat-toolbar class="bg-inherit">Menu</mat-toolbar>
 
     <mat-nav-list>
@@ -15,15 +15,20 @@
     <mat-toolbar class="bg-inherit sticky top-0 z-10" color="primary">
       @if (isHandset$ | async) {
         <button
-          type="button"
-          aria-label="Toggle sidenav"
-          matIconButton
-          (click)="drawer.toggle()">
+            type="button"
+            aria-label="Toggle sidenav"
+            matIconButton
+            (click)="drawer.toggle()">
           <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
         </button>
       }
       <span>web-crawler-angular</span>
     </mat-toolbar>
     <!-- Add Content Here -->
+
+    <router-outlet></router-outlet>
+
+
   </mat-sidenav-content>
 </mat-sidenav-container>
+

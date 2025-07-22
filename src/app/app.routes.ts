@@ -5,6 +5,14 @@ export const routes: Routes = [
     path: '',
     loadComponent: () => import('../app/layout/navigation/navigation.component')
       .then(m => m.NavigationComponent),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('../app/features/crawler/crawler-form/crawler-form.component')
+          .then(m => m.CrawlerFormComponent),
+      },
+    ]
   },
   {
     path: '**',
