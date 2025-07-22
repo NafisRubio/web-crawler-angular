@@ -28,3 +28,8 @@ html {
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
 }
+
+// Override the default width for the sidenav container
+mat-sidenav-container {
+  --mat-sidenav-container-width: 200px;
+}
