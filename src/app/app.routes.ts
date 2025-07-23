@@ -12,6 +12,11 @@ export const routes: Routes = [
         loadComponent: () => import('../app/features/crawler/crawler-form/crawler-form.component')
           .then(m => m.CrawlerFormComponent),
       },
+      {
+        path: 'products',
+        loadChildren: () => import('./features/products/product.routes')
+          .then(m => m.PRODUCT_ROUTES),
+      }
     ]
   },
   {
