@@ -70,7 +70,8 @@
               "buildTarget": "web-crawler-angular:build:production"
             },
             "development": {
-              "buildTarget": "web-crawler-angular:build:development"
+              "buildTarget": "web-crawler-angular:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

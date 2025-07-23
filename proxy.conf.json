@@ -1,0 +1,11 @@
+{
+  "/api/v1/products": {
+    "target": "http://localhost:4200",
+    "secure": false,
+    "pathRewrite": {
+      "^/api/v1/products": "/mocks/products.json"
+    },
+    "logLevel": "debug",
+    "changeOrigin": true
+  }
+}
