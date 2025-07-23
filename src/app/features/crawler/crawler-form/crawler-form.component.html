@@ -1,18 +1,22 @@
-<div class="flex justify-center items-baseline">
+<form [formGroup]="crawlerForm" (ngSubmit)="onSubmit()" class="flex justify-center items-baseline">
   <mat-form-field class="w-80">
     <mat-label>Enter your domain</mat-label>
     <input
         matInput
         placeholder="example.com"
-        [formControl]="domainName"
-        (blur)="updateErrorMessage()"
-        required
+        formControlName="domainName"
     />
-    @if (domainName.invalid) {
-      <mat-error>{{ errorMessage() }}</mat-error>
+    <!-- This error logic is more robust -->
+    @if (domainErrorMessage) {
+      <mat-error>{{ domainErrorMessage }}</mat-error>
     }
   </mat-form-field>
+
   <div class="ml-4">
-    <button [disabled]="domainName.invalid" matButton="elevated" color="primary" (click)="onSubmit()" >Submit</button>
+    <button
+        type="submit"
+        [disabled]="crawlerForm.invalid"
+        mat-raised-button
+        color="primary">Start Crawling</button>
   </div>
-</div>
+</form>
