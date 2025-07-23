@@ -4,6 +4,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
+import {CrawlerService} from "../../../core/services/crawler.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-crawler-form',
@@ -14,16 +16,17 @@ import {MatCardModule} from '@angular/material/card';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatCardModule
-  ],
+    MatCardModule,
+  ]
 })
 export class CrawlerFormComponent {
   readonly domainPattern = /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
-  // Use a computed signal to derive the error message
   private fb = inject(FormBuilder);
   crawlerForm = this.fb.group({
-    domainName: ['', [Validators.required, Validators.pattern(this.domainPattern)]]
+    domainName: ['big.com', [Validators.required, Validators.pattern(this.domainPattern)]]
   });
+  private crawlerService = inject(CrawlerService);
+  private _snackBar = inject(MatSnackBar);
 
   get domainErrorMessage(): string {
     const domainControl = this.crawlerForm.get('domainName');
@@ -43,6 +46,26 @@ export class CrawlerFormComponent {
   }
 
   onSubmit(): void {
-    alert(`Crawling: ${this.crawlerForm.get('domainName')?.value}`);
+    if (!this.crawlerForm.valid) {
+      return;
+    }
+
+    const domainName = this.crawlerForm.get('domainName')?.value;
+    if (!domainName) {
+      return;
+    }
+
+    this._snackBar.open('Start Crawling!')
+    this.crawlerService.crawlWebsite(domainName)
+      .subscribe({
+        next: (response) => {
+          console.log('Crawl successful', response);
+          // Handle successful response
+        },
+        error: (error) => {
+          console.error('Crawl failed', error);
+          // Handle error
+        }
+      });
   }
 }
