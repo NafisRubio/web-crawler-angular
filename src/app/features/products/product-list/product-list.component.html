@@ -1,54 +1,65 @@
 <div class="container">
   <h1>Products</h1>
 
-  <div *ngIf="isLoading" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-  </div>
+  @if (isLoading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  }
 
-  <div *ngIf="error" class="error-container">
-    <p class="error-message">{{ error }}</p>
-  </div>
+  @if (error) {
+    <div class="error-container">
+      <p class="error-message">{{ error }}</p>
+    </div>
+  }
 
-  <div *ngIf="!isLoading && !error" class="table-container">
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-      <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let product">{{ product.Name }}</td>
-      </ng-container>
+  @if (!isLoading() && !error) {
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let product">{{ product.Name }}</td>
+        </ng-container>
 
-      <!-- Price Column -->
-      <ng-container matColumnDef="price">
-        <th mat-header-cell *matHeaderCellDef>Price</th>
-        <td mat-cell *matCellDef="let product">{{ product.Price }}</td>
-      </ng-container>
+        <!-- Price Column -->
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef>Price</th>
+          <td mat-cell *matCellDef="let product">{{ product.Price }}</td>
+        </ng-container>
 
-      <!-- Discounted Price Column -->
-      <ng-container matColumnDef="priceDiscounted">
-        <th mat-header-cell *matHeaderCellDef>Discounted Price</th>
-        <td mat-cell *matCellDef="let product">{{ product.PriceDiscounted }}</td>
-      </ng-container>
+        <!-- Discounted Price Column -->
+        <ng-container matColumnDef="priceDiscounted">
+          <th mat-header-cell *matHeaderCellDef>Discounted Price</th>
+          <td mat-cell *matCellDef="let product">{{ product.PriceDiscounted }}</td>
+        </ng-container>
 
-      <!-- Status Column -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let product">{{ product.Status }}</td>
-      </ng-container>
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let product">{{ product.Status }}</td>
+        </ng-container>
 
-      <!-- Images Column -->
-      <ng-container matColumnDef="images">
-        <th mat-header-cell *matHeaderCellDef>Images</th>
-        <td mat-cell *matCellDef="let product">
-          <div class="image-preview" *ngIf="product.ImagesURL && product.ImagesURL.length > 0">
-            <img [src]="product.ImagesURL[0]" alt="Product image" class="thumbnail">
-            <span *ngIf="product.ImagesURL.length > 1" class="image-count">+{{ product.ImagesURL.length - 1 }}</span>
-          </div>
-          <span *ngIf="!product.ImagesURL || product.ImagesURL.length === 0">No images</span>
-        </td>
-      </ng-container>
+        <!-- Images Column -->
+        <ng-container matColumnDef="images">
+          <th mat-header-cell *matHeaderCellDef>Images</th>
+          <td mat-cell *matCellDef="let product">
+            @if (product.ImagesURL && product.ImagesURL.length > 0) {
+              <div class="image-preview">
+                <img [src]="product.ImagesURL[0]" alt="Product image" class="thumbnail">
+                @if (product.ImagesURL.length > 1) {
+                  <span class="image-count">+{{ product.ImagesURL.length - 1 }}</span>
+                }
+              </div>
+            } @else {
+              <span>No images</span>
+            }
+          </td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  </div>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  }
 </div>

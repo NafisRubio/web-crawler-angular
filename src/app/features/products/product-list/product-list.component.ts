@@ -7,6 +7,7 @@ import {ProductService} from '../services/product.service';
 import {Product} from '../models/product.model';
 import {ProductDataSource} from "../datasources/product.datasource";
 import {Pagination} from "../../../core/models/response.model";
+import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-product-list',
@@ -18,7 +19,6 @@ import {Pagination} from "../../../core/models/response.model";
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
   pagination: Pagination | null = null;
-  isLoading = false;
   error: string | null = null;
   // Domain for the API call - this could be made configurable
   domain = 'attfrench.cross-right.tw';
@@ -27,7 +27,11 @@ export class ProductListComponent implements OnInit {
   private productService = inject(ProductService)
   dataSource: ProductDataSource = new ProductDataSource(this.productService);
 
+  // Convert the observable to a signal
+  isLoading = toSignal(this.dataSource.loading$, { initialValue: false });
+
   ngOnInit(): void {
     this.dataSource.loadProducts(this.domain, 1, 10);
   }
+
 }
