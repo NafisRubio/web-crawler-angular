@@ -1,3 +1,5 @@
+import {Response} from "../../../core/models/response.model";
+
 export interface Product {
   Name: string;
   Price: number;
@@ -8,17 +10,6 @@ export interface Product {
   Status: string;
 }
 
-export interface ProductsResponse {
+export interface ProductsResponse extends Response{
   data: Product[];
-  status: string;
-  pagination: Pagination;
-}
-
-export interface Pagination {
-  page: number;
-  page_size: number;
-  total_items: number;
-  total_pages: number;
-  next_page: number;
-  prev_page: number;
 }
