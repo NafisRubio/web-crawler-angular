@@ -1,64 +1,113 @@
-<div class="container">
-  <h1>Products</h1>
+
+<div class="p-5 max-w-7xl mx-auto">
+  <div class="flex justify-between items-center mb-5">
+    <h1 class="text-3xl font-bold text-gray-800">Products</h1>
+
+    <!-- Column Configuration Menu -->
+    <div class="flex gap-2">
+      <button mat-button [matMenuTriggerFor]="columnMenu" class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
+        <mat-icon>view_column</mat-icon>
+        Configure Columns
+      </button>
+
+      <mat-menu #columnMenu="matMenu" class="mt-2">
+        <div class="min-w-64">
+          <div class="flex justify-between items-center px-4 py-3 border-b border-gray-200">
+            <span class="font-medium text-gray-700">Select Columns</span>
+            <button mat-button (click)="resetColumns()" class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors">
+              Reset
+            </button>
+          </div>
+
+          @for (column of availableColumns(); track column.key) {
+            <div class="px-4 py-2 hover:bg-gray-50 cursor-pointer" (click)="$event.stopPropagation()">
+              <mat-checkbox
+                  [checked]="column.visible"
+                  (change)="toggleColumn(column.key)"
+                  class="w-full">
+                <span class="text-sm text-gray-700">{{ column.header }}</span>
+              </mat-checkbox>
+            </div>
+          }
+        </div>
+      </mat-menu>
+    </div>
+  </div>
 
   @if (isLoading()) {
-    <div class="loading-container">
+    <div class="flex justify-center items-center h-48">
       <mat-spinner diameter="50"></mat-spinner>
     </div>
   }
 
   @if (error) {
-    <div class="error-container">
-      <p class="error-message">{{ error }}</p>
+    <div class="text-center p-5">
+      <p class="text-red-500 text-lg">{{ error }}</p>
     </div>
   }
 
   @if (!isLoading() && !error) {
-    <div class="table-container">
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-        <!-- Name Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let product">{{ product.Name }}</td>
-        </ng-container>
+    <div class="w-full overflow-x-auto bg-white rounded-lg shadow-md">
+      <table mat-table [dataSource]="dataSource" class="w-full min-w-full">
 
-        <!-- Price Column -->
-        <ng-container matColumnDef="price">
-          <th mat-header-cell *matHeaderCellDef>Price</th>
-          <td mat-cell *matCellDef="let product">{{ product.Price }}</td>
-        </ng-container>
+        <!-- Dynamic Column Generation -->
+        @for (column of visibleColumns; track column.key) {
+          <ng-container [matColumnDef]="column.key">
+            <th mat-header-cell *matHeaderCellDef
+                class="bg-gray-50 text-gray-700 font-semibold text-sm px-6 py-4 text-left border-b border-gray-200"
+                [style.width]="column.width">
+              {{ column.header }}
+            </th>
+            <td mat-cell *matCellDef="let product"
+                class="px-6 py-4 border-b border-gray-100 text-sm text-gray-900"
+                [style.width]="column.width">
 
-        <!-- Discounted Price Column -->
-        <ng-container matColumnDef="priceDiscounted">
-          <th mat-header-cell *matHeaderCellDef>Discounted Price</th>
-          <td mat-cell *matCellDef="let product">{{ product.PriceDiscounted }}</td>
-        </ng-container>
+              <!-- Text and Number columns -->
+              @if (column.type === 'text' || column.type === 'number') {
+                <span class="block truncate max-w-xs" [title]="formatCellValue(getCellValue(product, column), column.type)">
+                  {{ formatCellValue(getCellValue(product, column), column.type) }}
+                </span>
+              }
 
-        <!-- Status Column -->
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
-          <td mat-cell *matCellDef="let product">{{ product.Status }}</td>
-        </ng-container>
+              <!-- Array columns (like tags) -->
+              @if (column.type === 'array') {
+                <div class="flex flex-wrap gap-1 max-w-48">
+                  @for (tag of getCellValue(product, column); track tag) {
+                    <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                      {{ tag }}
+                    </span>
+                  }
+                  @empty {
+                    <span class="text-gray-400 italic text-xs">No tags</span>
+                  }
+                </div>
+              }
 
-        <!-- Images Column -->
-        <ng-container matColumnDef="images">
-          <th mat-header-cell *matHeaderCellDef>Images</th>
-          <td mat-cell *matCellDef="let product">
-            @if (product.ImagesURL && product.ImagesURL.length > 0) {
-              <div class="image-preview">
-                <img [src]="product.ImagesURL[0]" alt="Product image" class="thumbnail">
-                @if (product.ImagesURL.length > 1) {
-                  <span class="image-count">+{{ product.ImagesURL.length - 1 }}</span>
+              <!-- Image columns -->
+              @if (column.type === 'image') {
+                @if (getCellValue(product, column) && getCellValue(product, column).length > 0) {
+                  <div class="flex items-center gap-2">
+                    <img [src]="getCellValue(product, column)[0]"
+                         alt="Product image"
+                         class="w-10 h-10 object-cover rounded border border-gray-200">
+                    @if (getCellValue(product, column).length > 1) {
+                      <span class="bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full">
+                        +{{ getCellValue(product, column).length - 1 }}
+                      </span>
+                    }
+                  </div>
+                } @else {
+                  <span class="text-gray-400 italic text-xs">No images</span>
                 }
-              </div>
-            } @else {
-              <span>No images</span>
-            }
-          </td>
-        </ng-container>
+              }
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </td>
+          </ng-container>
+        }
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns" class="border-b border-gray-200"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            class="hover:bg-gray-50 transition-colors cursor-pointer"></tr>
       </table>
     </div>
   }

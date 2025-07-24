@@ -1,72 +1,53 @@
-.container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+/* Custom scrollbar styling for table container */
+.mat-mdc-table-container::-webkit-scrollbar {
+  height: 8px;
 }
 
-h1 {
-  margin-bottom: 20px;
-  color: #333;
+.mat-mdc-table-container::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded;
 }
 
-.loading-container {
-  display: flex;
-  justify-content: center;
-  padding: 40px 0;
+.mat-mdc-table-container::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded;
 }
 
-.error-container {
-  background-color: #ffebee;
-  border-radius: 4px;
-  padding: 16px;
-  margin-bottom: 20px;
+.mat-mdc-table-container::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
 }
 
-.error-message {
-  color: #d32f2f;
-  margin: 0;
+/* Override Material table styles to work better with Tailwind */
+.mat-mdc-table {
+  @apply bg-transparent;
 }
 
-.table-container {
-  margin-bottom: 20px;
+.mat-mdc-header-cell {
+  @apply border-0;
 }
 
-table {
-  width: 100%;
+.mat-mdc-cell {
+  @apply border-0;
 }
 
-.mat-column-name {
-  max-width: 300px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* Custom checkbox styling for menu */
+.mat-mdc-checkbox {
+  @apply w-full;
 }
 
-.mat-column-price, .mat-column-priceDiscounted, .mat-column-status {
-  width: 150px;
+.mat-mdc-checkbox .mdc-form-field {
+  @apply w-full;
 }
 
-.image-preview {
-  display: flex;
-  align-items: center;
+/* Menu panel styling */
+.mat-mdc-menu-panel {
+  @apply rounded-lg shadow-lg border border-gray-200;
 }
 
-.thumbnail {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-right: 8px;
+/* Button hover effects */
+.mat-mdc-button:hover {
+  @apply shadow-sm;
 }
 
-.image-count {
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-  border-radius: 12px;
-  padding: 2px 8px;
-  font-size: 12px;
-}
-
-mat-paginator {
-  margin-top: 16px;
+/* Row hover effect enhancement */
+.mat-mdc-row:hover {
+  @apply shadow-sm;
 }
