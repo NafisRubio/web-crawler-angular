@@ -1,16 +1,14 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, OnInit, signal, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatTableModule} from '@angular/material/table';
-import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatPaginator, MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonModule} from '@angular/material/button';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
-import {ProductService} from '../services/product.service';
 import {Product} from '../models/product.model';
 import {ProductDataSource} from "../datasources/product.datasource";
-import {Pagination} from "../../../core/models/response.model";
 import {toSignal} from "@angular/core/rxjs-interop";
 
 export interface ColumnConfig {
@@ -38,12 +36,18 @@ export interface ColumnConfig {
   styleUrl: './product-list.component.css'
 })
 export class ProductListComponent implements OnInit {
-  products: Product[] = [];
-  pagination: Pagination | null = null;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   error: string | null = null;
   // Domain for the API call - this could be made configurable
   domain = 'attfrench.cross-right.tw';
+  // Pagination settings
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(10);
+  pageSizeOptions = [5, 10, 25, 50, 100];
 
+  // Convert the observables to signals
+  dataSource: ProductDataSource = new ProductDataSource();
   // Dynamic column configuration
   availableColumns = signal<ColumnConfig[]>([
     {key: 'name', header: 'Name', visible: true, type: 'text', width: '200px'},
@@ -55,9 +59,8 @@ export class ProductListComponent implements OnInit {
     {key: 'tags', header: 'Tags', visible: false, type: 'array', width: '200px'}
   ]);
   // Convert the observable to a signal
-  private productService = inject(ProductService)
-  dataSource: ProductDataSource = new ProductDataSource(this.productService);
   isLoading = toSignal(this.dataSource.loading$, {initialValue: false});
+  pagination = toSignal(this.dataSource.pagination$, {initialValue: null});
 
   // Computed property for displayed columns
   get displayedColumns(): string[] {
@@ -70,7 +73,19 @@ export class ProductListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.dataSource.loadProducts(this.domain, 1, 10);
+    this.loadProducts();
+  }
+
+  // Load products with current pagination settings
+  loadProducts(): void {
+    this.dataSource.loadProducts(this.domain, this.currentPage(), this.pageSize());
+  }
+
+  // Handle pagination events
+  onPageChange(event: PageEvent): void {
+    this.currentPage.set(event.pageIndex + 1); // API uses 1-based indexing
+    this.pageSize.set(event.pageSize);
+    this.loadProducts();
   }
 
   // Toggle column visibility
@@ -80,11 +95,6 @@ export class ProductListComponent implements OnInit {
       col.key === columnKey ? {...col, visible: !col.visible} : col
     );
     this.availableColumns.set(updatedColumns);
-  }
-
-  // Get column configuration
-  getColumnConfig(key: string): ColumnConfig | undefined {
-    return this.availableColumns().find(col => col.key === key);
   }
 
   // Get cell value based on column type

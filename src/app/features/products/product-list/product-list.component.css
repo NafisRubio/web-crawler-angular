@@ -1,17 +1,18 @@
-/* Custom scrollbar styling for table container */
-.mat-mdc-table-container::-webkit-scrollbar {
-  height: 8px;
+/* Custom scrollbar styling for the new table container */
+.table-container::-webkit-scrollbar {
+  width: 8px;  /* For vertical scrollbar */
+  height: 8px; /* For horizontal scrollbar */
 }
 
-.mat-mdc-table-container::-webkit-scrollbar-track {
+.table-container::-webkit-scrollbar-track {
   @apply bg-gray-100 rounded;
 }
 
-.mat-mdc-table-container::-webkit-scrollbar-thumb {
+.table-container::-webkit-scrollbar-thumb {
   @apply bg-gray-300 rounded;
 }
 
-.mat-mdc-table-container::-webkit-scrollbar-thumb:hover {
+.table-container::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400;
 }
 
