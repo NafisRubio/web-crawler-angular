@@ -21,12 +21,12 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 })
 export class CrawlerFormComponent {
   readonly domainPattern = /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
-  private fb = inject(FormBuilder);
+  private readonly fb = inject(FormBuilder);
   crawlerForm = this.fb.group({
-    domainName: ['big.com', [Validators.required, Validators.pattern(this.domainPattern)]]
+    domainName: ['attfrench.cross-right.tw', [Validators.required, Validators.pattern(this.domainPattern)]]
   });
-  private crawlerService = inject(CrawlerService);
-  private _snackBar = inject(MatSnackBar);
+  private readonly crawlerService = inject(CrawlerService);
+  private readonly _snackBar = inject(MatSnackBar);
 
   get domainErrorMessage(): string {
     const domainControl = this.crawlerForm.get('domainName');
@@ -54,6 +54,8 @@ export class CrawlerFormComponent {
     if (!domainName) {
       return;
     }
+
+    localStorage.setItem('domainName', domainName)
 
     this._snackBar.open('Start Crawling!')
     this.crawlerService.crawlWebsite(domainName)

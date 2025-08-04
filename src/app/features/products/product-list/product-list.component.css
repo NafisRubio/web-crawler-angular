@@ -1,54 +1,10 @@
-/* Custom scrollbar styling for the new table container */
-.table-container::-webkit-scrollbar {
-  width: 8px;  /* For vertical scrollbar */
-  height: 8px; /* For horizontal scrollbar */
+@reference "tailwindcss";
+
+.example-container {
+  height: 400px;
+  overflow: auto;
 }
 
-.table-container::-webkit-scrollbar-track {
-  @apply bg-gray-100 rounded;
-}
-
-.table-container::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded;
-}
-
-.table-container::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400;
-}
-
-/* Override Material table styles to work better with Tailwind */
-.mat-mdc-table {
-  @apply bg-transparent;
-}
-
-.mat-mdc-header-cell {
-  @apply border-0;
-}
-
-.mat-mdc-cell {
-  @apply border-0;
-}
-
-/* Custom checkbox styling for menu */
-.mat-mdc-checkbox {
-  @apply w-full;
-}
-
-.mat-mdc-checkbox .mdc-form-field {
-  @apply w-full;
-}
-
-/* Menu panel styling */
-.mat-mdc-menu-panel {
-  @apply rounded-lg shadow-lg border border-gray-200;
-}
-
-/* Button hover effects */
-.mat-mdc-button:hover {
-  @apply shadow-sm;
-}
-
-/* Row hover effect enhancement */
-.mat-mdc-row:hover {
-  @apply shadow-sm;
+table {
+  width: 100%;
 }

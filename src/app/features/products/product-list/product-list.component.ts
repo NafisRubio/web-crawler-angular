@@ -1,4 +1,4 @@
-import {Component, OnInit, signal, ViewChild} from '@angular/core';
+import {Component, effect, OnInit, signal, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatTableModule} from '@angular/material/table';
 import {MatPaginator, MatPaginatorModule, PageEvent} from '@angular/material/paginator';
@@ -55,12 +55,19 @@ export class ProductListComponent implements OnInit {
     {key: 'priceDiscounted', header: 'Discounted Price', visible: true, type: 'number', width: '150px'},
     {key: 'description', header: 'Description', visible: false, type: 'text', width: '300px'},
     {key: 'status', header: 'Status', visible: true, type: 'text', width: '100px'},
-    {key: 'images', header: 'Images', visible: true, type: 'image', width: '120px'},
+    {key: 'images', header: 'Images', visible: false, type: 'image', width: '120px'},
     {key: 'tags', header: 'Tags', visible: false, type: 'array', width: '200px'}
   ]);
   // Convert the observable to a signal
-  isLoading = toSignal(this.dataSource.loading$, {initialValue: false});
+  isLoading = signal(false);
   pagination = toSignal(this.dataSource.pagination$, {initialValue: null});
+
+  constructor() {
+    // Add effect to debug the loading signal
+    effect(() => {
+      console.debug('isLoading signal changed to:', this.isLoading());
+    });
+  }
 
   // Computed property for displayed columns
   get displayedColumns(): string[] {
@@ -73,19 +80,27 @@ export class ProductListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Subscribe to loading changes directly
+    this.dataSource.loading$.subscribe(loading => {
+      console.debug('Loading state changed to:', loading);
+      this.isLoading.set(loading);
+    });
+
     this.loadProducts();
   }
 
   // Load products with current pagination settings
   loadProducts(): void {
-    this.dataSource.loadProducts(this.domain, this.currentPage(), this.pageSize());
+    console.debug('loadProducts called, current isLoading:', this.isLoading());
+    return this.dataSource.loadProducts(this.domain, this.currentPage(), this.pageSize());
   }
 
   // Handle pagination events
   onPageChange(event: PageEvent): void {
+    console.debug('onPageChange called, current isLoading:', this.isLoading());
     this.currentPage.set(event.pageIndex + 1); // API uses 1-based indexing
     this.pageSize.set(event.pageSize);
-    this.loadProducts();
+    return this.loadProducts();
   }
 
   // Toggle column visibility

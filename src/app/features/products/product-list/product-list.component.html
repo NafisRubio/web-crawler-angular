@@ -1,11 +1,11 @@
-
 <div class="p-5 max-w-7xl mx-auto">
   <div class="flex justify-between items-center mb-5">
     <h1 class="text-3xl font-bold text-gray-800">Products</h1>
 
     <!-- Column Configuration Menu -->
     <div class="flex gap-2">
-      <button mat-button [matMenuTriggerFor]="columnMenu" class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
+      <button mat-button [matMenuTriggerFor]="columnMenu"
+              class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
         <mat-icon>view_column</mat-icon>
         Configure Columns
       </button>
@@ -14,7 +14,8 @@
         <div class="min-w-64">
           <div class="flex justify-between items-center px-4 py-3 border-b border-gray-200">
             <span class="font-medium text-gray-700">Select Columns</span>
-            <button mat-button (click)="resetColumns()" class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors">
+            <button mat-button (click)="resetColumns()"
+                    class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors">
               Reset
             </button>
           </div>
@@ -47,7 +48,7 @@
   }
 
   @if (!isLoading() && !error) {
-    <div class="w-full overflow-x-auto bg-white rounded-lg shadow-md">
+    <div class="w-full overflow-x-auto bg-white rounded-lg shadow-md example-container mat-elevation-z8">
       <table mat-table [dataSource]="dataSource" class="w-full min-w-full">
 
         <!-- Dynamic Column Generation -->
@@ -65,7 +66,8 @@
 
               <!-- Text and Number columns -->
               @if (column.type === 'text' || column.type === 'number') {
-                <span class="block truncate max-w-xs" [title]="formatCellValue(getCellValue(product, column), column.type)">
+                <span class="block truncate max-w-xs"
+                      [title]="formatCellValue(getCellValue(product, column), column.type)">
                   {{ formatCellValue(getCellValue(product, column), column.type) }}
                 </span>
               }
@@ -77,8 +79,7 @@
                     <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                       {{ tag }}
                     </span>
-                  }
-                  @empty {
+                  } @empty {
                     <span class="text-gray-400 italic text-xs">No tags</span>
                   }
                 </div>
@@ -127,3 +128,4 @@
     </div>
   }
 </div>
+isLoading: {{isLoading()}}

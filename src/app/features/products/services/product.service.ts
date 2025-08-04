@@ -1,22 +1,27 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {Observable, tap} from 'rxjs';
 import { ProductsResponse } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = '/api/v1/products';
-
-  constructor(private http: HttpClient) { }
+  private readonly apiUrl = '/api/v1/products';
+  private readonly http = inject(HttpClient)
 
   getProducts(domain: string, page: number = 1, pageSize: number = 10): Observable<ProductsResponse> {
     let params = new HttpParams()
-      .set('domain', domain)
+      .set('domain_name', domain)
       .set('page', page.toString())
       .set('page_size', pageSize.toString());
 
-    return this.http.get<ProductsResponse>(this.apiUrl, { params });
+    console.debug('Making HTTP request with params:', params.toString());
+
+    return this.http.get<ProductsResponse>(this.apiUrl, { params })
+      .pipe(
+        tap(response => console.debug('HTTP response received:', response))
+      );
+
   }
 }
