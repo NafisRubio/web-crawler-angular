@@ -10,6 +10,10 @@ import {MatIconModule} from '@angular/material/icon';
 import {Product} from '../models/product.model';
 import {ProductDataSource} from "../datasources/product.datasource";
 import {toSignal} from "@angular/core/rxjs-interop";
+import {FormControl, ReactiveFormsModule} from "@angular/forms";
+import {MatLabel, MatOption, MatSelect, MatSelectTrigger} from "@angular/material/select";
+import {MatFormField} from "@angular/material/form-field";
+import {MatListOption, MatSelectionList} from "@angular/material/list";
 
 export interface ColumnConfig {
   key: string;
@@ -30,7 +34,15 @@ export interface ColumnConfig {
     MatCheckboxModule,
     MatButtonModule,
     MatMenuModule,
-    MatIconModule
+    MatIconModule,
+    MatSelectTrigger,
+    MatLabel,
+    MatFormField,
+    MatOption,
+    MatSelect,
+    ReactiveFormsModule,
+    MatSelectionList,
+    MatListOption
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css'
@@ -59,8 +71,12 @@ export class ProductListComponent implements OnInit {
     {key: 'tags', header: 'Tags', visible: false, type: 'array', width: '200px'}
   ]);
   // Convert the observable to a signal
-  isLoading = signal(false);
+  isLoading = toSignal(this.dataSource.loading$, {initialValue: false});
   pagination = toSignal(this.dataSource.pagination$, {initialValue: null});
+
+
+  toppings = new FormControl('');
+  toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
 
   constructor() {
     // Add effect to debug the loading signal
@@ -80,12 +96,6 @@ export class ProductListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Subscribe to loading changes directly
-    this.dataSource.loading$.subscribe(loading => {
-      console.debug('Loading state changed to:', loading);
-      this.isLoading.set(loading);
-    });
-
     this.loadProducts();
   }
 

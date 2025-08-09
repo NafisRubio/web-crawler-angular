@@ -1,6 +1,6 @@
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, Observable, of, tap} from 'rxjs';
-import {catchError, delay, finalize} from 'rxjs/operators';
+import {catchError, finalize} from 'rxjs/operators';
 import {Product} from '../models/product.model';
 import {ProductService} from '../services/product.service';
 import {Pagination} from "../../../core/models/response.model";
@@ -21,9 +21,9 @@ export class ProductDataSource implements DataSource<Product> {
   }
 
   disconnect(): void {
-    this.productsSubject.complete();
-    this.loadingSubject.complete();
-    this.paginationSubject.complete();
+    // Intentionally do not complete subjects here because the table can be destroyed/created
+    // while the data source remains in use (e.g., when toggling loading spinner).
+    // Completing them would prevent further emissions (like loading=false) from being received.
   }
 
   loadProducts(domain: string, page: number, pageSize: number) {
@@ -37,24 +37,23 @@ export class ProductDataSource implements DataSource<Product> {
           // Process the response data
           this.productsSubject.next(response.data);
           this.paginationSubject.next(response.pagination);
-          // Set loading to false IMMEDIATELY after processing
-          console.debug('Setting loading to false after processing response');
-          this.loadingSubject.next(false);
         }),
         catchError(error => {
           console.error('Error loading products:', error);
-          // Set loading to false on error
-          this.loadingSubject.next(false);
+          // Provide a safe fallback response
           return of({data: [], status: 'error', pagination: null});
+        }),
+        finalize(() => {
+          console.debug('Finalizing loadProducts: setting loading to false');
+          this.loadingSubject.next(false);
         })
       )
       .subscribe({
-        next: (response) => {
+        next: () => {
           console.debug('Subscribe next - response already processed in tap');
         },
         error: (error) => {
           console.error('Subscribe error:', error);
-          this.loadingSubject.next(false);
         },
         complete: () => {
           console.debug('Observable completed');
