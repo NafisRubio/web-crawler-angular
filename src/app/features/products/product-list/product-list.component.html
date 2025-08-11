@@ -51,7 +51,7 @@
   }
 
   @if (!isLoading() && !error) {
-    <div class="w-full overflow-x-auto bg-white rounded-lg shadow-md mat-elevation-z8 h-6/12 overflow-auto">
+    <div class="max-h-[85dvh] overflow-auto">
       <table mat-table [dataSource]="dataSource" class="w-full min-w-full">
 
         <!-- Dynamic Column Generation -->
