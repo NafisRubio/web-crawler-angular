@@ -11,9 +11,7 @@ import {Product} from '../models/product.model';
 import {ProductDataSource} from "../datasources/product.datasource";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
-import {MatLabel, MatOption, MatSelect, MatSelectTrigger} from "@angular/material/select";
-import {MatFormField} from "@angular/material/form-field";
-import {MatListOption, MatSelectionList} from "@angular/material/list";
+import {MatDivider, MatListOption, MatSelectionList} from "@angular/material/list";
 
 export interface ColumnConfig {
   key: string;
@@ -35,14 +33,10 @@ export interface ColumnConfig {
     MatButtonModule,
     MatMenuModule,
     MatIconModule,
-    MatSelectTrigger,
-    MatLabel,
-    MatFormField,
-    MatOption,
-    MatSelect,
     ReactiveFormsModule,
     MatSelectionList,
-    MatListOption
+    MatListOption,
+    MatDivider
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css'
@@ -87,7 +81,9 @@ export class ProductListComponent implements OnInit {
 
   // Computed property for displayed columns
   get displayedColumns(): string[] {
-    return this.availableColumns().filter(col => col.visible).map(col => col.key);
+    return this.availableColumns()
+      .filter(col => col.visible)
+      .map(col => col.key);
   }
 
   // Get visible columns
@@ -163,5 +159,19 @@ export class ProductListComponent implements OnInit {
       visible: ['name', 'price', 'priceDiscounted', 'status', 'images'].includes(col.key)
     }));
     this.availableColumns.set(defaultColumns);
+  }
+
+  setColumnVisibility(columnKey: string, selected: boolean): void {
+    const updatedColumns = this.availableColumns().map(col =>
+      col.key === columnKey ? {...col, visible: selected} : col
+    );
+    this.availableColumns.set(updatedColumns);
+  }
+
+  onSelectionListKeydown(event: KeyboardEvent): void {
+    // Mirror the click's stopPropagation for keyboard activation keys
+    if (event.key === ' ' || event.key === 'Spacebar' || event.key === 'Enter') {
+      event.stopPropagation();
+    }
   }
 }

@@ -2,70 +2,40 @@
   <div class="flex justify-between items-center mb-5">
     <h1 class="text-3xl font-bold text-gray-800">Products</h1>
 
-    <!-- Column Configuration Menu -->
-    <div class="flex gap-2">
-      <button mat-button [matMenuTriggerFor]="columnMenu"
-              class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
-        <mat-icon>view_column</mat-icon>
-        Configure Columns
-      </button>
-
-      <mat-menu #columnMenu="matMenu" class="mt-2">
-        <div class="min-w-64">
-          <div class="flex justify-between items-center px-4 py-3 border-b border-gray-200">
-            <span class="font-medium text-gray-700">Select Columns</span>
-            <button mat-button (click)="resetColumns()"
-                    class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors">
-              Reset
-            </button>
-          </div>
-
-          @for (column of availableColumns(); track column.key) {
-            <div class="px-4 py-2 hover:bg-gray-50 cursor-pointer" (click)="$event.stopPropagation()">
-              <mat-checkbox
-                  [checked]="column.visible"
-                  (change)="toggleColumn(column.key)"
-                  class="w-full">
-                <span class="text-sm text-gray-700">{{ column.header }}</span>
-              </mat-checkbox>
-            </div>
-          }
-        </div>
-      </mat-menu>
-    </div>
-
     <!-- Column Configuration Menu New 2 -->
-    <button matButton [matMenuTriggerFor]="belowMenu">Below</button>
-    <mat-menu #belowMenu="matMenu" yPosition="below">
-      <mat-selection-list #shoes>
-        @for (shoe of toppingList; track shoe) {
-          <mat-list-option>{{shoe}}</mat-list-option>
+    <button matButton [matMenuTriggerFor]="columnMenu">
+      <mat-icon>view_column</mat-icon>
+      Configure Columns
+    </button>
+    <mat-menu #columnMenu="matMenu" yPosition="below">
+
+      <section class="flex flex-row items-center justify-evenly">
+        <div>Select Columns</div>
+        <div>
+          <button
+              matButton
+              (click)="resetColumns()"
+          >Reset
+          </button>
+        </div>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <mat-selection-list
+          (click)="$event.stopPropagation()"
+          (keydown)="onSelectionListKeydown($event)"
+      >
+        @for (column of availableColumns(); track column.key) {
+          <mat-list-option
+              [value]="column.key"
+              [selected]="column.visible"
+              (selectedChange)="setColumnVisibility(column.key, $event)"
+          >{{ column.header }}
+          </mat-list-option>
         }
       </mat-selection-list>
-
-      <p>
-        Options selected: {{shoes.selectedOptions.selected.length}}
-      </p>
     </mat-menu>
-    <!-- Column Configuration Menu New -->
-    <div class="flex gap-2">
-      <mat-form-field>
-        <mat-label>Toppings</mat-label>
-        <mat-select [formControl]="toppings" multiple>
-          <mat-select-trigger>
-            {{toppings.value?.[0] || ''}}
-            @if ((toppings.value?.length || 0) > 1) {
-              <span class="example-additional-selection">
-          (+{{(toppings.value?.length || 0) - 1}} {{toppings.value?.length === 2 ? 'other' : 'others'}})
-        </span>
-            }
-          </mat-select-trigger>
-          @for (topping of toppingList; track topping) {
-            <mat-option [value]="topping">{{topping}}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
   </div>
 
   @if (isLoading()) {
@@ -123,7 +93,7 @@
                 @if (getCellValue(product, column) && getCellValue(product, column).length > 0) {
                   <div class="flex items-center gap-2">
                     <img [src]="getCellValue(product, column)[0]"
-                         alt="Product image"
+                         [alt]="product.Name"
                          class="w-10 h-10 object-cover rounded border border-gray-200">
                     @if (getCellValue(product, column).length > 1) {
                       <span class="bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full">
@@ -161,4 +131,3 @@
     </div>
   }
 </div>
-isLoading: {{isLoading()}}
