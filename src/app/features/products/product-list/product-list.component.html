@@ -51,6 +51,42 @@
   }
 
   @if (!isLoading() && !error) {
+
+    <mat-form-field class="example-form-field">
+      <mat-label>Filters</mat-label>
+      <mat-icon matTextPrefix>filter_list</mat-icon>
+      <mat-chip-grid #chipGrid aria-label="Enter keywords" [formControl]="formControl">
+        @for (keyword of keywords(); track keyword) {
+          <mat-chip-row (removed)="removeKeyword(keyword)">
+            {{keyword}}
+            <button matChipRemove [attr.aria-label]="'remove ' + keyword">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        }
+        <input
+            placeholder="Name:Apple, Price:150"
+            type="text"
+            matInput
+            [matChipInputFor]="chipGrid"
+            (matChipInputTokenEnd)="add($event)"
+            #fruitInput
+            [matAutocomplete]="auto"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        />
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected(fruitInput, $event);">
+          @for (fruit of displayedColumns; track fruit) {
+            <mat-option [value]="fruit">{{fruit}}</mat-option>
+          }
+        </mat-autocomplete>
+        @if (keywords().length > 0) {
+          <button matSuffix matIconButton aria-label="Clear" (click)="removeKeywords()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-chip-grid>
+    </mat-form-field>
+
     <div class="max-h-[85dvh] overflow-auto">
       <table mat-table [dataSource]="dataSource" class="w-full min-w-full">
 

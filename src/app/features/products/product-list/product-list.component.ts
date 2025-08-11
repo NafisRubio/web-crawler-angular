@@ -1,4 +1,4 @@
-import {Component, effect, OnInit, signal, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, OnInit, signal, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatTableModule} from '@angular/material/table';
 import {MatPaginator, MatPaginatorModule, PageEvent} from '@angular/material/paginator';
@@ -10,8 +10,19 @@ import {MatIconModule} from '@angular/material/icon';
 import {Product} from '../models/product.model';
 import {ProductDataSource} from "../datasources/product.datasource";
 import {toSignal} from "@angular/core/rxjs-interop";
-import {FormControl, ReactiveFormsModule} from "@angular/forms";
+import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatDivider, MatListOption, MatSelectionList} from "@angular/material/list";
+import {MatFormField, MatInput, MatLabel} from "@angular/material/input";
+import {MatChipGrid, MatChipInput, MatChipInputEvent, MatChipRow, MatChipsModule} from "@angular/material/chips";
+import {LiveAnnouncer} from "@angular/cdk/a11y";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {
+  MatAutocomplete,
+  MatAutocompleteSelectedEvent,
+  MatAutocompleteTrigger,
+  MatOption
+} from "@angular/material/autocomplete";
+import {COMMA, ENTER} from "@angular/cdk/keycodes";
 
 export interface ColumnConfig {
   key: string;
@@ -36,10 +47,23 @@ export interface ColumnConfig {
     ReactiveFormsModule,
     MatSelectionList,
     MatListOption,
-    MatDivider
+    MatDivider,
+    MatLabel,
+    MatFormField,
+    MatChipGrid,
+    MatChipRow,
+    MatChipInput,
+    MatFormFieldModule,
+    MatChipsModule,
+    FormsModule,
+    MatInput,
+    MatAutocomplete,
+    MatOption,
+    MatAutocompleteTrigger,
   ],
   templateUrl: './product-list.component.html',
-  styleUrl: './product-list.component.css'
+  styleUrl: './product-list.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -68,9 +92,39 @@ export class ProductListComponent implements OnInit {
   isLoading = toSignal(this.dataSource.loading$, {initialValue: false});
   pagination = toSignal(this.dataSource.pagination$, {initialValue: null});
 
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
+  readonly keywords = signal(['angular', 'how-to', 'tutorial', 'accessibility']);
+  readonly formControl = new FormControl(['angular']);
+  announcer = inject(LiveAnnouncer);
 
-  toppings = new FormControl('');
-  toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
+  removeKeyword(keyword: string) {
+    this.keywords.update(keywords => {
+      const index = keywords.indexOf(keyword);
+      if (index < 0) {
+        return keywords;
+      }
+
+      keywords.splice(index, 1);
+      this.announcer.announce(`removed ${keyword}`);
+      return [...keywords];
+    });
+  }
+
+  removeKeywords(){
+    this.keywords.set([]);
+  }
+
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    // Add our keyword
+    if (value) {
+      this.keywords.update(keywords => [...keywords, value]);
+    }
+
+    // Clear the input value
+    event.chipInput!.clear();
+  }
 
   constructor() {
     // Add effect to debug the loading signal
@@ -173,5 +227,9 @@ export class ProductListComponent implements OnInit {
     if (event.key === ' ' || event.key === 'Spacebar' || event.key === 'Enter') {
       event.stopPropagation();
     }
+  }
+
+  selected(fruitInput: HTMLInputElement, event: MatAutocompleteSelectedEvent): void {
+    fruitInput.value = `${event.option.viewValue}:`
   }
 }
